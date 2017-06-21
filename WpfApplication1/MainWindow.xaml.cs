@@ -23,6 +23,8 @@ namespace WpfApplication1
     /// </summary>
     public partial class MainWindow : Window
     {
+        public delegate void MyDebugInfo(string str);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,21 +47,6 @@ namespace WpfApplication1
             this.wbSource = new WriteableBitmapSource();
             T1.Source = this.wbSource.ImageSource;
             this.wbSource.SetupSurface(1920, 1080, FrameFormat.YV12);
-
-
-            if (m_bInitSDK == false)
-            {
-                MessageBox.Show("NET_DVR_Init error!");
-                return;
-            }
-            else
-            {
-                //保存SDK日志 To save the SDK log
-                CHCNetSDK.NET_DVR_SetLogToFile(3, "C:\\SdkLog\\", true);
-            }
-            //
-            // TODO: 在 InitializeComponent 调用后添加任何构造函数代码
-            //
         }
 
         private void Uninit()
@@ -123,7 +110,6 @@ namespace WpfApplication1
                 m_lUserID = -1;
 
             }
-            return;
         }
 
         private void StartPreview(int Channel)
@@ -136,7 +122,6 @@ namespace WpfApplication1
                 lpPreviewInfo.dwStreamType = 0;//码流类型：0-主码流，1-子码流，2-码流3，3-码流4，以此类推
                 lpPreviewInfo.dwLinkMode = 4;//连接方式：0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP 
                 lpPreviewInfo.bBlocked = true; //0- 非阻塞取流，1- 阻塞取流
-
                 lpPreviewInfo.dwDisplayBufNum = 15; //播放库播放缓冲区最大缓冲帧数
 
 
@@ -153,11 +138,6 @@ namespace WpfApplication1
                     iLastErr = CHCNetSDK.NET_DVR_GetLastError();
                     str = "NET_DVR_RealPlay_V40 failed, error code= " + iLastErr; //预览失败，输出错误号
                     MessageBox.Show(str);
-                    return;
-                }
-                else
-                {
-
                 }
 
             }
@@ -172,77 +152,17 @@ namespace WpfApplication1
                     return;
                 }
                 m_lRealHandle = -1;
-                //  btnPreview.Text = "Live View";
-
             }
-            return;
         }
 
-        private void RealDataCallBack2(int lRealHandle, uint dwDataType, IntPtr pBuffer, uint dwBufSize, IntPtr pUser)
-        {
-            // throw new NotImplementedException();
-        }
-
-        public delegate void MyDebugInfo(string str);
 
 
 
         PlayCtrl.DISPLAYCBFUN m_fDisplayFun;
         private void RemoteDisplayCBFun(int nPort, IntPtr pBuf, int nSize, int nWidth, int nHeight, int nStamp, int nType, int nReserved)
         {
-
             this.Dispatcher.Invoke(new MShow(Show2), pBuf);
-
-
-            //MyDebugInfo AlarmInfo = new MyDebugInfo(DebugInfo);
-            //if (!m_bJpegCapture)
-            //{
-            //    return;
-            //}
-            //else
-            //{
-            //    uint nLastErr = 100;
-            //    // save picture as you want
-
-
-            //    IntPtr ptrJpeg = new IntPtr();
-            //    uint nBuffersize = (uint)(2 * nWidth * nHeight);
-            //    ptrJpeg = Marshal.AllocHGlobal((int)nBuffersize);
-            //    uint dwJpegSize = 0;
-
-
-            //    if (!PlayCtrl.PlayM4_GetJPEG(nPort, ptrJpeg, nBuffersize, ref dwJpegSize))
-            //    {
-            //        nLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
-            //        this.Dispatcher.BeginInvoke(AlarmInfo, "Jpeg Capture fail");
-            //    }
-            //    else
-            //    {
-
-
-
-            //        byte[] by = new byte[dwJpegSize];
-            //        Marshal.Copy(ptrJpeg, by, 0, (int)dwJpegSize);
-            //        this.Dispatcher.BeginInvoke(new ShowJpeg(MShowJpeg), System.Windows.Threading.DispatcherPriority.ApplicationIdle, by);
-            //        Marshal.FreeHGlobal(ptrJpeg);
-
-            //    }
-
-            //    //if (!PlayCtrl.PlayM4_ConvertToJpegFile(pBuf, nSize, nWidth, nHeight, pFrameInfo.nType, "Capture.jpg"))
-            //    //{
-            //    //    //Debug.WriteLine("PlayM4_ConvertToJpegFile fail");
-            //    //    nLastErr = PlayCtrl.PlayM4_GetLastError(m_lPort);
-            //    //    this.BeginInvoke(AlarmInfo, "Jpeg Capture fail");
-
-
-            //    //}
-            //    //else
-            //    //{
-            //    //    this.BeginInvoke(AlarmInfo, "Jpeg Capture Succ");
-            //    //    //Debug.WriteLine("PlayM4_ConvertToJpegFile Succ");
-            //    //}
-
-            //}
+           
         }
         public void RealDataCallBack(Int32 lRealHandle, UInt32 dwDataType, IntPtr pBuffer, UInt32 dwBufSize, IntPtr pUser)
         {
@@ -261,8 +181,6 @@ namespace WpfApplication1
                         MessageBox.Show("Get Port Fail");
                     }
 
-
-
                     if (dwBufSize > 0)
                     {
                         //set as stream mode, real-time stream under preview
@@ -278,23 +196,12 @@ namespace WpfApplication1
                             break;
                         }
 
-                        //MyChuli = new PlayCtrl.DECCBFUN(Chuli);
-                        //if (!PlayCtrl.PlayM4_SetDecCallBack(m_lPort, MyChuli))
-                        //{
-                        //    this.Dispatcher.BeginInvoke(AlarmInfo, "PlayM4_SetDecCallBack fail");
-                        //}
-
-
-
-                        ////set soft decode display callback function to capture
                         m_fDisplayFun = new PlayCtrl.DISPLAYCBFUN(RemoteDisplayCBFun);
                         if (!PlayCtrl.PlayM4_SetDisplayCallBack(m_lPort, m_fDisplayFun))
                         {
                             this.Dispatcher.BeginInvoke(AlarmInfo, "PlayM4_SetDisplayCallBack fail");
                         }
 
-                        ////start play, set play window
-                        //this.BeginInvoke(AlarmInfo, "About to call PlayM4_Play");
 
                         if (!PlayCtrl.PlayM4_Play(m_lPort, m_ptrRealHandle))
                         {
@@ -303,18 +210,6 @@ namespace WpfApplication1
                             break;
                         }
 
-                        ////set frame buffer number
-
-                        //if (!PlayCtrl.PlayM4_SetDisplayBuf(m_lPort, 15))
-                        //{
-                        //    this.BeginInvoke(AlarmInfo, "PlayM4_SetDisplayBuf fail");
-                        //}
-
-                        ////set display mode
-                        //if (!PlayCtrl.PlayM4_SetOverlayMode(m_lPort, 0, 0/* COLORREF(0)*/))//play off screen // todo!!!
-                        //{
-                        //    this.BeginInvoke(AlarmInfo, " PlayM4_SetOverlayMode fail");
-                        //}
                     }
 
                     break;
@@ -365,13 +260,18 @@ namespace WpfApplication1
         }
 
 
+        [DllImport("gdi32.dll")]
 
+        public static extern int DeleteObject(IntPtr hdc);
 
         private delegate void MShow(IntPtr pBuf);
         private void Show2(IntPtr pBuf)
         {
             this.wbSource.Render(pBuf);
             T1.Source = this.wbSource.ImageSource;
+            DeleteObject(pBuf);
+            GC.Collect();
+
         }
 
         WriteableBitmapSource wbSource;
@@ -384,9 +284,6 @@ namespace WpfApplication1
             StartPreview(3);
 
         }
-
-
-
 
     }
 }

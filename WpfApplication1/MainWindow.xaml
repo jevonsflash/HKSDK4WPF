@@ -5,16 +5,14 @@
         Height="1080"
         Width="1920">
     <Grid Margin="0,0,2,0">
+        <Image x:Name="T1"
+               Stretch="Fill" />
         <Button Content="Button"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Click="Button_Click" />
-        <Image HorizontalAlignment="Left"
-               Height="1080"
-               VerticalAlignment="Top"
-               Width="1920"
-               x:Name="T1"
-               Stretch="Fill" />
+                Click="Button_Click"
+                Height="90"
+                Width="225" />
 
     </Grid>
 </Window>
