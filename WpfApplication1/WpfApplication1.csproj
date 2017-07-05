@@ -69,7 +69,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="HKVedioGenerator.cs" />
+    <Compile Include="HK\CHCActivityData.cs" />
     <Compile Include="HK\CHCNetSDK.cs" />
+    <Compile Include="HK\HKUserManagement.cs" />
     <Compile Include="HK\PlayCtrl.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

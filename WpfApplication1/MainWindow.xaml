@@ -4,9 +4,28 @@
         Title="MainWindow"
         Height="1080"
         Width="1920">
-    <Grid Margin="0,0,2,0">
+    <Grid Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
         <Image x:Name="T1"
                Stretch="Fill" />
+        <Image Grid.Column="1"
+               x:Name="T2"
+               Stretch="Fill" />
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Image x:Name="T3"
+                   Stretch="Fill" />
+            <Image Grid.Row="1"
+                   x:Name="T4"
+                   Stretch="Fill" />
+        </Grid>
         <Button Content="Button"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
